@@ -23,6 +23,39 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Hide scrollbar for Chrome, Edge, and Safari */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+html,
+body {
+  scrollbar-width: none; /* Disable scrollbar */
+}
+
+/* Ensure scrolling is enabled */
+html,
+body {
+  overflow-y: auto; /* Enable scrolling */
+}
+
+
+/* Hide scrollbar for Chrome, Edge, and Safari */
+.flex-1::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.flex-1 {
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+/* Ensure scrolling is enabled */
+.flex-1 {
+  overflow-y: auto; /* Enable scrolling */
+}
 
 @layer base {
   :root {

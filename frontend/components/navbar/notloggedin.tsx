@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogIn, UserPlusIcon } from "lucide-react";
+import { LogIn, User, UserCircle, UserPlusIcon } from "lucide-react";
 import { SignupForm } from "../forms/signup";
 
 export default function NotLoggedIn() {
@@ -48,8 +48,8 @@ export default function NotLoggedIn() {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="rounded-full bg-neutral-400 w-8 h-8" />
+        <DropdownMenuTrigger asChild className="cursor-pointer">
+          <UserCircle className="w-5 h-5"/>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>

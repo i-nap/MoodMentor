@@ -17,8 +17,8 @@ export function NavBar() {
     const [loggedIn, setLoggedIn] = React.useState(false)
 
     return (
-        <div className="flex items-center min-w-full w-full fixed justify-center p-2 z-[50] mt-[2rem]">
-            <div className="flex justify-between md:w-[720px] w-[95%] border dark:border-zinc-900 dark:bg-black bg-opacity-10 relative backdrop-filter backdrop-blur-lg bg-white border-white border-opacity-20 rounded-xl p-2 shadow-lg">
+        <div className="flex items-center min-w-full w-full fixed justify-center p-2 z-[49] mt-[2rem]">
+            <div className="flex justify-between md:w-[720px] w-[95%] border dark:border-zinc-900 dark:bg-neutral-800 bg-opacity-10 relative backdrop-filter backdrop-blur-lg bg-white border-white border-opacity-20 rounded-xl py-2 px-6 shadow-lg">
 
                 <Dialog>
                     <SheetTrigger className="min-[825px]:hidden p-2 transition">
@@ -59,15 +59,11 @@ export function NavBar() {
                     </NavigationMenuList>
                 </NavigationMenu>
                 <div className="flex items-center gap-2 max-[825px]:hidden">
-                    <Link href="/software">
-                        <Button variant="ghost">Home</Button>
-                    </Link>
+
                     <Link href="/automation">
                         <Button variant="ghost">About Us</Button>
                     </Link>
-                    <Link href="/blog">
-                        <Button variant="ghost">Contact</Button>
-                    </Link>
+                
                     <ModeToggle />
                     {loggedIn ? (
                         <span>login</span>
