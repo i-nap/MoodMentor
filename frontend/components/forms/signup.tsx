@@ -25,6 +25,7 @@ export function SignupForm() {
         age: "",
         gender: "",
         password: "",
+        cpassword: ""
     });
 
     const handleInputChange = (
@@ -182,13 +183,13 @@ export function SignupForm() {
                             />
                         </LabelInputContainer>
                         <LabelInputContainer>
-                            <Label htmlFor="password">Confirm Password</Label>
+                            <Label htmlFor="cpassword">Confirm Password</Label>
                             <Input
-                                id="password"
-                                name="password"
+                                id="cpassword"
+                                name="cpassword"
                                 placeholder="••••••••"
                                 type="password"
-                                value={formData.password}
+                                value={formData.cpassword}
                                 onChange={handleInputChange}
                                 required
                             />
