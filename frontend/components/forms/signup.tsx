@@ -15,6 +15,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { OTPInput } from "input-otp";
+import { InputOTPLogin } from "./otp";
 export function SignupForm() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -25,7 +27,8 @@ export function SignupForm() {
         age: "",
         gender: "",
         password: "",
-        cpassword: ""
+        cpassword: "",
+        otp: ""
     });
 
     const handleInputChange = (
@@ -51,12 +54,14 @@ export function SignupForm() {
     return (
         <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
             <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-                {step === 1 ? "Welcome to Mood Mentor" : "Complete Your Profile"}
+                {step === 1 ? "Welcome to Mood Mentor" : step === 2 ? "Verify OTP" : "Complete Your Profile"}
             </h2>
             <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
                 {step === 1
                     ? "Enter your email to continue"
-                    : "Fill in the remaining details"}
+                    : step === 2
+                        ? "Enter the OTP sent to your email"
+                        : "Fill in the remaining details"}
             </p>
 
             <form className="my-8" onSubmit={handleSubmit}>
@@ -65,11 +70,12 @@ export function SignupForm() {
                     <>
                         <button
                             className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-                            type="submit"
+                            type="button"
+                            onClick={handleNextStep}
                         >
                             <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
                             <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-                                Google
+                                Signup with Google
                             </span>
                             <BottomGradient />
                         </button>
@@ -86,12 +92,32 @@ export function SignupForm() {
                                 required
                             />
                         </LabelInputContainer>
+                        <button
+                            type="button"
+                            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] mt-6"
+                            onClick={handleNextStep}
+                        >
+                            Proceed
+                            <BottomGradient />
+                        </button>
                     </>
-
                 )}
 
-                {/* Step 2: Additional Fields */}
+                {/* Step 2: OTP Verification */}
                 {step === 2 && (
+                    <>
+
+                        <div className="gap-4 flex flex-col items-center">
+                            <InputOTPLogin />
+                        </div>
+
+
+
+                    </>
+                )}
+
+                {/* Step 3: Additional Fields */}
+                {step === 3 && (
                     <>
                         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
 
@@ -119,6 +145,8 @@ export function SignupForm() {
                                 />
                             </LabelInputContainer>
                         </div>
+                 
+
                         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                             <LabelInputContainer>
                                 <Label htmlFor="lastname">Last Name</Label>
@@ -210,24 +238,25 @@ export function SignupForm() {
                             <BottomGradient />
                         </button>
                     )}
-                    {step === 1 && (
-                        <button
-                            type="button"
-                            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-                            onClick={handleNextStep}
-                        >
-                            Continue
-                            <BottomGradient />
-                        </button>
-                    )}
                     {step === 2 && (
                         <button
                             type="submit"
                             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+
+                            onClick={handleNextStep}
                         >
-                            Sign up
+                            Verify OTP
                             <BottomGradient />
                         </button>
+                    )}
+                    {step === 3 && (<button
+                        type="submit"
+                        className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                    >
+                        Sign up
+                        <BottomGradient />
+                    </button>
+
                     )}
                 </div>
             </form>

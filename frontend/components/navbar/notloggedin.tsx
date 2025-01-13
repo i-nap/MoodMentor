@@ -10,18 +10,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogIn, User, UserCircle, UserPlusIcon } from "lucide-react";
+import { LogIn, UserCircle, UserPlusIcon } from "lucide-react";
 import { SignupForm } from "../forms/signup";
+import { LoginForm } from "../forms/login";
 
 export default function NotLoggedIn() {
   const [isSignupVisible, setSignupVisible] = useState(false);
+  const [isLoginVisible, setLoginVisible] = useState(false);
 
   const handleSignupClick = () => {
     setSignupVisible(true);
   };
 
-  const handleClose = () => {
+  const handleLoginClick = () => {
+    setLoginVisible(true);
+  };
+
+  const handleCloseSignup = () => {
     setSignupVisible(false);
+  };
+
+  const handleCloseLogin = () => {
+    setLoginVisible(false);
   };
 
   const signupModal = isSignupVisible ? (
@@ -29,18 +39,39 @@ export default function NotLoggedIn() {
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black opacity-50"
-        onClick={handleClose}
+        onClick={handleCloseSignup}
       />
       {/* Signup Form */}
       <div className="relative bg-white dark:bg-black rounded-lg shadow-lg w-full max-w-md">
         {/* Close Button */}
         <button
           className="absolute top-3 right-3 text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
-          onClick={handleClose}
+          onClick={handleCloseSignup}
         >
           ✕
         </button>
-        <SignupForm />
+        <SignupForm/>
+      </div>
+    </div>
+  ) : null;
+
+  const loginModal = isLoginVisible ? (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black opacity-50"
+        onClick={handleCloseLogin}
+      />
+      {/* Login Form */}
+      <div className="relative bg-white dark:bg-black rounded-lg shadow-lg w-full max-w-md">
+        {/* Close Button */}
+        <button
+          className="absolute top-3 right-3 text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+          onClick={handleCloseLogin}
+        >
+          ✕
+        </button>
+        <LoginForm />
       </div>
     </div>
   ) : null;
@@ -49,13 +80,13 @@ export default function NotLoggedIn() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="cursor-pointer">
-          <UserCircle className="w-5 h-5"/>
+          <UserCircle className="w-5 h-5" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLoginClick}>
               <LogIn />
               <span>Login</span>
             </DropdownMenuItem>
@@ -67,8 +98,8 @@ export default function NotLoggedIn() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {isSignupVisible &&
-        ReactDOM.createPortal(signupModal, document.body)}
+      {isSignupVisible && ReactDOM.createPortal(signupModal, document.body)}
+      {isLoginVisible && ReactDOM.createPortal(loginModal, document.body)}
     </>
   );
 }
