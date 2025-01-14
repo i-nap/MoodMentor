@@ -34,6 +34,11 @@ export default function NotLoggedIn() {
     setLoginVisible(false);
   };
 
+  const handleSignupSuccess = () => {
+    setSignupVisible(false); // Close the signup modal
+    setLoginVisible(true); // Open the login modal
+  };
+
   const signupModal = isSignupVisible ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -50,7 +55,7 @@ export default function NotLoggedIn() {
         >
           ✕
         </button>
-        <SignupForm/>
+        <SignupForm onSignupSuccess={handleSignupSuccess} />
       </div>
     </div>
   ) : null;

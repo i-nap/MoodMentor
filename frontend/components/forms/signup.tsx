@@ -4,7 +4,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 import { IconBrandGoogle } from '@tabler/icons-react';
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import { ArrowLeft } from "lucide-react";
 import {
     Select,
@@ -14,12 +14,11 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
-import { OTPInput } from "input-otp";
-import { InputOTPLogin } from "./otp";
+} from "@/components/ui/select";
 import axios from "axios";
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../ui/input-otp";
 
-export function SignupForm() {
+export function SignupForm({ onSignupSuccess }) {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         email: "",
@@ -30,43 +29,95 @@ export function SignupForm() {
         gender: "",
         password: "",
         cpassword: "",
-        otp: ""
+        otp: "",
     });
+    const [otp, setOTP] = useState(["", "", "", "", "", ""]);
     const [message, setMessage] = useState(""); // To display feedback
 
-    const handleInputChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
+    // Function to validate OTP
+    const validateOTP = async () => {
+        try {
+            const response = await axios.post("/otp/validate", {
+                email: formData.email,
+                otp: otp.join(""),
+            });
+            setMessage(response.data.message || "OTP validated successfully");
+            setStep(3);
+        } catch (error) {
+            setMessage(error.response?.data?.message || "Error validating OTP");
+        }
+    };
+
+    // Handle OTP input changes
+    const handleOTPChange = (index, value) => {
+        const updatedOTP = [...otp];
+        updatedOTP[index] = value;
+        setOTP(updatedOTP);
+    };
+
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleNextStep = () => {
+    const handleNextStep = async () => {
         if (step === 1) {
-          sendOTP(); 
-        } else {
-          setStep((prev) => prev + 1);
+            // try {
+            //     const response = await axios.post("http://localhost:8080/otp/send", { email: formData.email });
+            //     setMessage(response.data.message || "OTP sent successfully");
+            //     setStep(2);
+            // } catch (error) {
+            //     setMessage(error.response?.data?.message || "Error sending OTP");
+            // }
+            setStep(3);
+        } else if (step === 2) {
+            validateOTP();
         }
-      };
+    };
 
     const handlePreviousStep = () => {
         setStep((prev) => prev - 1);
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form submitted", formData);
-    };
 
-    const sendOTP = async () => {
-        try {
-          const response = await axios.post("http://localhost:8080/otp/send", { email: formData.email });
-          setMessage(response.data); // Display success message
-          setStep(2); // Move to OTP step
-        } catch (error) {
-          setMessage(error.response?.data || "Error sending OTP");
+        if (formData.password !== formData.cpassword) {
+            setMessage("Passwords do not match");
+            return;
         }
-      };
+
+        try {
+            const response = await axios.post("http://localhost:8080/signup", {
+                email: formData.email,
+                firstname: formData.firstname,
+                middlename: formData.middlename,
+                lastname: formData.lastname,
+                age: formData.age,
+                gender: formData.gender,
+                password: formData.password,
+            });
+            setMessage(response.data.message || "Signup successful");
+            setStep(1); // Reset form after successful registration
+            setFormData({
+                email: "",
+                firstname: "",
+                middlename: "",
+                lastname: "",
+                age: "",
+                gender: "",
+                password: "",
+                cpassword: "",
+                otp: "",
+            });
+            setOTP(["", "", "", "", "", ""]);
+            if (onSignupSuccess) {
+                onSignupSuccess();
+            }
+        } catch (error) {
+            setMessage(error.response?.data?.message || "Signup failed");
+        }
+    };
 
     return (
         <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
@@ -86,7 +137,7 @@ export function SignupForm() {
                 {step === 1 && (
                     <>
                         <button
-                            className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
+                            className="relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
                             type="button"
                             onClick={handleNextStep}
                         >
@@ -123,13 +174,23 @@ export function SignupForm() {
                 {/* Step 2: OTP Verification */}
                 {step === 2 && (
                     <>
-
                         <div className="gap-4 flex flex-col items-center">
-                            <InputOTPLogin email={formData.email} />
+                            <InputOTP maxLength={6} onChange={handleOTPChange} value={otp}>
+                                <InputOTPGroup>
+                                    {[...Array(6)].map((_, index) => (
+                                        <InputOTPSlot key={index} index={index} />
+                                    ))}
+                                </InputOTPGroup>
+                            </InputOTP>
                         </div>
-
-
-
+                        <button
+                            type="button"
+                            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] mt-6"
+                            onClick={handleNextStep}
+                        >
+                            Verify OTP
+                            <BottomGradient />
+                        </button>
                     </>
                 )}
 
@@ -137,7 +198,6 @@ export function SignupForm() {
                 {step === 3 && (
                     <>
                         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-
                             <LabelInputContainer>
                                 <Label htmlFor="firstname">First Name</Label>
                                 <Input
@@ -162,7 +222,6 @@ export function SignupForm() {
                                 />
                             </LabelInputContainer>
                         </div>
-                 
 
                         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
                             <LabelInputContainer>
@@ -177,7 +236,7 @@ export function SignupForm() {
                                     required
                                 />
                             </LabelInputContainer>
-                            <LabelInputContainer >
+                            <LabelInputContainer>
                                 <Label htmlFor="age">Age</Label>
                                 <Input
                                     id="age"
@@ -198,20 +257,13 @@ export function SignupForm() {
                                     gender: value,
                                 }));
                             }}>
-                                <SelectTrigger className="w-full border rounded-md p-2 border-none bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input rounded-md px-3 py-2 text-sm  file:border-0 file:bg-transparent 
-          file:text-sm file:font-medium placeholder:text-neutral-400 dark:placeholder-text-neutral-600 
-          focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
-           disabled:cursor-not-allowed disabled:opacity-50
-           dark:shadow-[0px_0px_1px_1px_var(--neutral-700)]
-           group-hover/input:shadow-none transition duration-400" >
+                                <SelectTrigger className="w-full border rounded-md p-2">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-
                                     <SelectItem value="male">Male</SelectItem>
                                     <SelectItem value="female">Female</SelectItem>
                                     <SelectItem value="other">Other</SelectItem>
-
                                 </SelectContent>
                             </Select>
                         </LabelInputContainer>
@@ -255,25 +307,14 @@ export function SignupForm() {
                             <BottomGradient />
                         </button>
                     )}
-                    {step === 2 && (
+                    {step === 3 && (
                         <button
                             type="submit"
                             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-
-                            onClick={handleNextStep}
                         >
-                            Verify OTP
+                            Sign up
                             <BottomGradient />
                         </button>
-                    )}
-                    {step === 3 && (<button
-                        type="submit"
-                        className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-                    >
-                        Sign up
-                        <BottomGradient />
-                    </button>
-
                     )}
                 </div>
             </form>
