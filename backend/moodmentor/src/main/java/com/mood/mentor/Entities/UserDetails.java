@@ -1,7 +1,10 @@
 package com.mood.mentor.Entities;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
 import java.time.LocalDateTime;
 import java.util.Date;
+
 
 public class UserDetails {
 

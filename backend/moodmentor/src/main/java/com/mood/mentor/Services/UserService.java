@@ -44,7 +44,8 @@ public class UserService {
     private static Map<String,Object> getUserDetails(UserDetails userDetails) {
         Map<String,Object> response = new HashMap<>();
         response.put("message", "Login successful");
-        response.put("name", userDetails.getFirstName() + " " + userDetails.getLastName());
+        response.put("firstName", userDetails.getFirstName());
+                response.put("lastName",userDetails.getLastName());
         response.put("email", userDetails.getEmail());
         response.put("userId", userDetails.getUser_id());
 

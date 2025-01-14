@@ -3,6 +3,7 @@ package com.mood.mentor.Controller;
 import com.mood.mentor.Services.EmailService;
 import com.mood.mentor.Services.OTPService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -20,34 +21,35 @@ public class OTPcontroller {
     @PostMapping("/send")
     public String sendOTP(@RequestBody Map<String, String> request) {
         String email = request.get("email");
+        System.out.println("Sending OTP to " + email);
 
         // Generate OTP
         String otp = otpService.generateOTP();
+        System.out.println("Generated OTP: " + otp);
 
-        // Use email as the key to store OTP in Redis
+        // Store OTP in memory
         otpService.saveOTP(email, otp);
 
         // Send OTP via email
         String subject = "Your OTP Code";
         String body = "Dear User,\n\nYour OTP for verification is: " + otp +
-                "\n\nThe code is valid for 10 minutes.\n\nThank you!";
+                "\n\nThe code is valid for 2 minutes.\n\nThank you!";
         emailService.sendEmail(email, subject, body);
 
         return "OTP sent to " + email;
     }
 
-
     @PostMapping("/validate")
-    public String validateOTP(@RequestBody Map<String, String> request) {
-        // Validate OTP
+    public ResponseEntity<?> validateOTP(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String otp = request.get("otp");
+        System.out.println("Validating OTP for " + email);
+        System.out.println("Received OTP: " + otp);
         boolean isValid = otpService.validateOTP(email, otp);
         if (isValid) {
-            // OTP is valid, delete it from Redis
             otpService.deleteOTP(email);
-            return "OTP is valid!";
+            return ResponseEntity.ok("Valid OTP!");
         }
-        return "Invalid or expired OTP!";
+        return ResponseEntity.badRequest().body("Invalid OTP!");
     }
 }

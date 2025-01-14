@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface UserMapper {
 
-    @Select("SELECT email, password FROM UserDetails WHERE email = #{email}")
+    @Select("SELECT * FROM UserDetails WHERE email = #{email}")
     UserDetails findByEmail(String email);
 
     @Insert("INSERT INTO userdetails (firstName, lastName, email, password, dob, emergency, gender, age) " +
