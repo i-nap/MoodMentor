@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/select"
 import { OTPInput } from "input-otp";
 import { InputOTPLogin } from "./otp";
+import axios from "axios";
+
 export function SignupForm() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -30,6 +32,7 @@ export function SignupForm() {
         cpassword: "",
         otp: ""
     });
+    const [message, setMessage] = useState(""); // To display feedback
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -39,8 +42,12 @@ export function SignupForm() {
     };
 
     const handleNextStep = () => {
-        setStep((prev) => prev + 1);
-    };
+        if (step === 1) {
+          sendOTP(); 
+        } else {
+          setStep((prev) => prev + 1);
+        }
+      };
 
     const handlePreviousStep = () => {
         setStep((prev) => prev - 1);
@@ -50,6 +57,16 @@ export function SignupForm() {
         e.preventDefault();
         console.log("Form submitted", formData);
     };
+
+    const sendOTP = async () => {
+        try {
+          const response = await axios.post("/otp/send", { email: formData.email });
+          setMessage(response.data); // Display success message
+          setStep(2); // Move to OTP step
+        } catch (error) {
+          setMessage(error.response?.data || "Error sending OTP");
+        }
+      };
 
     return (
         <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
@@ -108,7 +125,7 @@ export function SignupForm() {
                     <>
 
                         <div className="gap-4 flex flex-col items-center">
-                            <InputOTPLogin />
+                            <InputOTPLogin email={formData.email} />
                         </div>
 
 
