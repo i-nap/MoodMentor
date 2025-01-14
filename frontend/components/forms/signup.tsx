@@ -60,7 +60,7 @@ export function SignupForm() {
 
     const sendOTP = async () => {
         try {
-          const response = await axios.post("/otp/send", { email: formData.email });
+          const response = await axios.post("http://localhost:8080/otp/send", { email: formData.email });
           setMessage(response.data); // Display success message
           setStep(2); // Move to OTP step
         } catch (error) {

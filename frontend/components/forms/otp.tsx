@@ -14,7 +14,7 @@ export function InputOTPLogin({ email }) {
   // Function to validate OTP
   const validateOTP = async () => {
     try {
-      const response = await axios.post("/otp/validate", {
+      const response = await axios.post("http://localhost:8080/otp/validate", {
         email,
         otp: otp.join(""),
       });
