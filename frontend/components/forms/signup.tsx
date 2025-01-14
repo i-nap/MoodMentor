@@ -49,9 +49,8 @@ export function SignupForm({ onSignupSuccess }) {
     };
 
     // Handle OTP input changes
-    const handleOTPChange = (index, value) => {
-        const updatedOTP = [...otp];
-        updatedOTP[index] = value;
+    const handleOTPChange = (newValue) => {
+        const updatedOTP = newValue.split(""); // Convert input string to array
         setOTP(updatedOTP);
     };
 
@@ -62,14 +61,14 @@ export function SignupForm({ onSignupSuccess }) {
 
     const handleNextStep = async () => {
         if (step === 1) {
-            // try {
-            //     const response = await axios.post("http://localhost:8080/otp/send", { email: formData.email });
-            //     setMessage(response.data.message || "OTP sent successfully");
-            //     setStep(2);
-            // } catch (error) {
-            //     setMessage(error.response?.data?.message || "Error sending OTP");
-            // }
-            setStep(3);
+            try {
+                const response = await axios.post("http://localhost:8080/otp/send", { email: formData.email });
+                setMessage(response.data.message || "OTP sent successfully");
+                setStep(2);
+            } catch (error) {
+                setMessage(error.response?.data?.message || "Error sending OTP");
+            }
+
         } else if (step === 2) {
             validateOTP();
         }
@@ -175,7 +174,7 @@ export function SignupForm({ onSignupSuccess }) {
                 {step === 2 && (
                     <>
                         <div className="gap-4 flex flex-col items-center">
-                            <InputOTP maxLength={6} onChange={handleOTPChange} value={otp}>
+                            <InputOTP maxLength={6} onChange={(value) => handleOTPChange(value)} value={otp.join("")}>
                                 <InputOTPGroup>
                                     {[...Array(6)].map((_, index) => (
                                         <InputOTPSlot key={index} index={index} />
