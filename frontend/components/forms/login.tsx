@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
@@ -7,11 +8,13 @@ import { IconBrandGoogle } from "@tabler/icons-react";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft } from "lucide-react";
 
-export function LoginForm() {
+export function LoginForm({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
+    const [loading, setLoading] = useState(false); // Loading state
+    const [errorMessage, setErrorMessage] = useState(""); // Error feedback
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -20,9 +23,37 @@ export function LoginForm() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("Form submitted", formData);
+        setLoading(true);
+        setErrorMessage("");
+
+        try {
+            // API call for login
+            const response = await axios.post("http://localhost:8080/auth/login", formData);
+
+            if (response.status !== 200) {
+                throw new Error("Login failed");
+            }
+            // Extract firstName and lastName from response
+            const { firstName, lastName, email , userId  } = response.data;
+
+            // Store the user name in localStorage or context for later use
+            localStorage.setItem("userFirstName", firstName);
+            localStorage.setItem("userLastName", lastName);
+
+            
+            // Handle successful login
+            if (onLoginSuccess) {
+                onLoginSuccess();
+            }
+            // Optionally refresh the page after login
+            window.location.reload();
+        } catch (error: any) {
+            setErrorMessage(error.response?.data?.message || "An error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -33,6 +64,10 @@ export function LoginForm() {
             <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
                 Log in to access your account
             </p>
+
+            {errorMessage && (
+                <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+            )}
 
             <form className="my-8" onSubmit={handleSubmit}>
                 {/* Google Login Button */}
@@ -80,8 +115,9 @@ export function LoginForm() {
                 <button
                     type="submit"
                     className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] mt-6"
+                    disabled={loading}
                 >
-                    Log in
+                    {loading ? "Logging in..." : "Log in"}
                     <BottomGradient />
                 </button>
             </form>

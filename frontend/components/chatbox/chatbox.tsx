@@ -84,26 +84,43 @@ export default function ChatBox() {
             {/* Introductory Text */}
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center text-center dark:text-neutral-200 flex-1">
-                <h1 className="text-4xl font-bold">Hello, Username</h1>
-                <p className="text-sm mt-2">
-                  I'm here to listen and support you. How are you feeling today?
-                </p>
+                {typeof window !== "undefined" && localStorage.getItem("userFirstName") ? (
+                  <div>
+                    <h1 className="text-4xl font-bold">
+                      Hello, {localStorage.getItem("userFirstName")}
+                    </h1>
+                    <p className="text-sm mt-2">
+                      I'm here to listen and support you. How are you feeling today?
+                    </p>
+                  </div>
+
+                ) : (
+                  <div>
+                     <h1 className="text-4xl font-bold">
+                      Welcome!
+                  </h1>
+                    <p className="text-sm mt-2">
+                    Please log in to start the conversation.
+                  </p>
+                  </div>
+                 
+                )}
+
               </div>
             )}
 
             {/* Chat Bubbles */}
             {messages.map((message, index) => (
-  <div
-    key={index}
-    className={`${
-      message.sender === "user" ? "self-end" : "self-start"
-    } dark:bg-neutral-800 bg-gray-100 text-black dark:text-gray-100 px-4 py-2 rounded-lg max-w-[70%] break-words shadow-md`}
-  >
-    {message.text.split("\n").map((line, idx) => (
-      <div key={idx}>{line}</div>
-    ))}
-  </div>
-))}
+              <div
+                key={index}
+                className={`${message.sender === "user" ? "self-end" : "self-start"
+                  } dark:bg-neutral-800 bg-gray-100 text-black dark:text-gray-100 px-4 py-2 rounded-lg max-w-[70%] break-words shadow-md`}
+              >
+                {message.text.split("\n").map((line, idx) => (
+                  <div key={idx}>{line}</div>
+                ))}
+              </div>
+            ))}
 
             {/* Loading Spinner */}
             {loading && (

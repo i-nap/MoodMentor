@@ -1,12 +1,11 @@
 "use client"
 import { cn } from "@/lib/utils"
-import { MenuIcon } from 'lucide-react'
+import { MenuIcon, User } from 'lucide-react'
 import Link from "next/link"
 import * as React from "react"
 import { Dialog, DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { NavigationMenu, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
-// import ModeToggle from "../mode-toggle"
 import { SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import ModeToggle from "./modetoggle"
 import NotLoggedIn from "./notloggedin"
@@ -14,7 +13,16 @@ import NotLoggedIn from "./notloggedin"
 
 export function NavBar() {
 
-    const [loggedIn, setLoggedIn] = React.useState(false)
+    const [loggedIn, setLoggedIn] = React.useState(false);
+    const [userFirstName, setUserFirstName] = React.useState("");
+
+    React.useEffect(() => {
+        const firstName = localStorage.getItem("userFirstName");
+        if (firstName) {
+            setUserFirstName(firstName);
+            setLoggedIn(true);
+        }
+    }, []);
 
     return (
         <div className="flex items-center min-w-full w-full fixed justify-center p-2 z-[49] mt-[2rem]">
@@ -63,12 +71,16 @@ export function NavBar() {
                     <Link href="/automation">
                         <Button variant="ghost">About Us</Button>
                     </Link>
-                
+                    
                     <ModeToggle />
                     {loggedIn ? (
-                        <span>login</span>
-                    ):
-                    <NotLoggedIn />}  
+                        <div className="flex items-center gap-2">
+                            <User className="w-6 h-6 text-neutral-700 dark:text-neutral-200" />
+                            <span className="text-sm text-neutral-800 dark:text-neutral-300">{userFirstName}</span>
+                        </div>
+                    ) : (
+                        <NotLoggedIn />
+                    )}
 
                 </div>
             </div>

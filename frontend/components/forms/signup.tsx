@@ -33,11 +33,13 @@ export function SignupForm({ onSignupSuccess }) {
     });
     const [otp, setOTP] = useState(["", "", "", "", "", ""]);
     const [message, setMessage] = useState(""); // To display feedback
+    const [loading, setLoading] = useState(false); // Loading state
 
     // Function to validate OTP
     const validateOTP = async () => {
         try {
-            const response = await axios.post("/otp/validate", {
+            setLoading(true);
+            const response = await axios.post("http://localhost:8080/otp/validate", {
                 email: formData.email,
                 otp: otp.join(""),
             });
@@ -45,6 +47,8 @@ export function SignupForm({ onSignupSuccess }) {
             setStep(3);
         } catch (error) {
             setMessage(error.response?.data?.message || "Error validating OTP");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -62,13 +66,15 @@ export function SignupForm({ onSignupSuccess }) {
     const handleNextStep = async () => {
         if (step === 1) {
             try {
+                setLoading(true);
                 const response = await axios.post("http://localhost:8080/otp/send", { email: formData.email });
                 setMessage(response.data.message || "OTP sent successfully");
                 setStep(2);
             } catch (error) {
                 setMessage(error.response?.data?.message || "Error sending OTP");
+            } finally {
+                setLoading(false);
             }
-
         } else if (step === 2) {
             validateOTP();
         }
@@ -87,11 +93,11 @@ export function SignupForm({ onSignupSuccess }) {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/signup", {
+            const response = await axios.post("http://localhost:8080/auth/register", {
                 email: formData.email,
-                firstname: formData.firstname,
-                middlename: formData.middlename,
-                lastname: formData.lastname,
+                firstName: formData.firstname,
+                middleName: formData.middlename,
+                lastName: formData.lastname,
                 age: formData.age,
                 gender: formData.gender,
                 password: formData.password,
@@ -163,8 +169,9 @@ export function SignupForm({ onSignupSuccess }) {
                             type="button"
                             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] mt-6"
                             onClick={handleNextStep}
+                            disabled={loading}
                         >
-                            Proceed
+                            {loading ? "Processing..." : "Proceed"}
                             <BottomGradient />
                         </button>
                     </>
@@ -187,7 +194,7 @@ export function SignupForm({ onSignupSuccess }) {
                             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] mt-6"
                             onClick={handleNextStep}
                         >
-                            Verify OTP
+                            {loading ? "Processing..." : "Verify Otp"}
                             <BottomGradient />
                         </button>
                     </>
@@ -256,16 +263,24 @@ export function SignupForm({ onSignupSuccess }) {
                                     gender: value,
                                 }));
                             }}>
-                                <SelectTrigger className="w-full border rounded-md p-2">
+                                <SelectTrigger className="w-full border rounded-md p-2 border-none bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input rounded-md px-3 py-2 text-sm  file:border-0 file:bg-transparent 
+          file:text-sm file:font-medium placeholder:text-neutral-400 dark:placeholder-text-neutral-600 
+          focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
+           disabled:cursor-not-allowed disabled:opacity-50
+           dark:shadow-[0px_0px_1px_1px_var(--neutral-700)]
+           group-hover/input:shadow-none transition duration-400" >
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
+
                                     <SelectItem value="male">Male</SelectItem>
                                     <SelectItem value="female">Female</SelectItem>
                                     <SelectItem value="other">Other</SelectItem>
+
                                 </SelectContent>
                             </Select>
                         </LabelInputContainer>
+
                         <LabelInputContainer className="mb-4">
                             <Label htmlFor="password">Password</Label>
                             <Input
